@@ -1,5 +1,5 @@
 {
-  "name": "@capacitor/filesystem",
+  "name": "@tcapacitor/filesystem",
   "version": "6.0.0",
   "description": "The Filesystem API provides a NodeJS-like API for working with files on the device.",
   "main": "dist/plugin.cjs.js",
