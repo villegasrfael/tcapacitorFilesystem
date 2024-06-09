@@ -9,7 +9,7 @@ import {
   readdir,
   stat,
   rename,
-  cp,
+  copyFile,
 } from 'fs/promises';
 import { tmpdir } from 'os';
 import { join, normalize, sep, dirname, isAbsolute } from 'path';
@@ -80,12 +80,12 @@ export class Filesystem implements FilesystemPlugin {
 
   async writeFile(options: WriteFileOptions): Promise<WriteFileResult> {
     const { path, directory, data, encoding, recursive = false } = options;
-
+  
     Filesystem.checkPath(path);
     Filesystem.checkData(data);
-
+  
     const fullPath = Filesystem.getPath(directory, path);
-
+  
     if (recursive) {
       try {
         await mkdir(dirname(fullPath), { recursive: true });
@@ -95,8 +95,10 @@ export class Filesystem implements FilesystemPlugin {
         }
       }
     }
-
-    return writeFile(fullPath, data, {
+  
+    const dataToWrite = typeof data === 'string' ? data : data.toString();
+  
+    return writeFile(fullPath, dataToWrite, {
       encoding: encodingToNative(encoding),
     }).then(() => ({ uri: this._getUri(fullPath) }));
   }
@@ -207,7 +209,7 @@ export class Filesystem implements FilesystemPlugin {
     Filesystem.checkPath(from);
     Filesystem.checkPath(to);
 
-    return cp(
+    return copyFile(
       Filesystem.getPath(directory, from),
       Filesystem.getPath(toDirectory ?? directory, to),
     );
@@ -231,10 +233,10 @@ export class Filesystem implements FilesystemPlugin {
     }
   }
 
-  private static checkData(data: string) {
-    if (!data) {
-      throw new Error('No data found');
-    }
+  private static checkData(data: string | Blob) {
+      if (!data || typeof data !== 'string') {
+        throw new Error('No data found');
+      }
   }
 
   private static getPath(directory: Directory, path: string): string {
