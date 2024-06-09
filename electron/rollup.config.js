@@ -5,7 +5,7 @@ export default {
   output: [
     {
       file: 'electron/dist/plugin.js',
-      name: 'capacitorElectronFilesystem',
+      name: 'tcapacitorElectronFilesystem',
       format: 'cjs',
       sourcemap: true,
       inlineDynamicImports: true,
